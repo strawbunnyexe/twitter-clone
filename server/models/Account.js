@@ -33,6 +33,8 @@ const AccountSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Account' }],
+  following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Account' }],
   createdDate: {
     type: Date,
     default: Date.now,
