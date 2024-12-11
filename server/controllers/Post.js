@@ -3,7 +3,7 @@ const models = require('../models');
 const { Post } = models.Post;
 const { Account } = models.Account;
 
-// const makerPage = async (req, res) => res.render('app');
+const homePage = async (req, res) => res.render('app');
 
 // create a new post
 const createPost = async (req, res) => {
@@ -17,6 +17,26 @@ const createPost = async (req, res) => {
   }
 };
 
+const makePost = async (req, res) => {
+  if (!req.body.name) {
+    return res.status(400).json({ error: 'Both name and age are required!' });
+  }
+
+  const postData = {
+    content: req.body.name,
+    author: req.session.account._id,
+  };
+
+  try {
+    const newPost = new Post(postData);
+    await newPost.save();
+    return res.status(201).json({ content: newPost.name });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: 'An error occured making post!' });
+  }
+};
+
 // get all posts of a user
 const getUserPosts = async (req, res) => {
   const { userId } = req.params;
@@ -25,6 +45,18 @@ const getUserPosts = async (req, res) => {
     res.status(200).json(posts);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+};
+
+const getPosts = async (req, res) => {
+  try {
+    const query = { owner: req.session.account._id };
+    const docs = await Post.find(query).select('content').lean().exec();
+
+    return res.json({ posts: docs });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: 'Error retrieving posts!' });
   }
 };
 
@@ -96,9 +128,12 @@ const deletePost = async (req, res) => {
 };
 
 module.exports = {
+  homePage,
   createPost,
+  makePost,
   getUserPosts,
   getFeed,
+  getPosts,
   likePost,
   unlikePost,
   deletePost,

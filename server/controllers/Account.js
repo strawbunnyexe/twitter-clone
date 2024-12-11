@@ -3,12 +3,15 @@ const models = require('../models');
 const { Account } = models;
 
 const loginPage = (req, res) => res.render('login');
+const settingsPage = (req, res) => res.render('settings');
 
+// logout of account
 const logout = (req, res) => {
   req.session.destroy();
   res.redirect('/');
 };
 
+// login
 const login = (req, res) => {
   const username = `${req.body.username}`;
   const pass = `${req.body.pass}`;
@@ -27,6 +30,7 @@ const login = (req, res) => {
   });
 };
 
+// signup new account
 const signup = async (req, res) => {
   const username = `${req.body.username}`;
   const pass = `${req.body.pass}`;
@@ -57,6 +61,7 @@ const signup = async (req, res) => {
 
 module.exports = {
   loginPage,
+  settingsPage,
   login,
   logout,
   signup,
